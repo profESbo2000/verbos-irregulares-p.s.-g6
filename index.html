@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupo 6: Verbos con Irregularidad Propia</title>
+  <style>
+    :root {
+      --table-bg: #1e1b4b;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --yellow-piece: #facc15;
+      --yellow-border: #eab308;
+      --special-piece: #dc2626;
+      --special-border: #991b1b;
+      --pronoun-color: #d9381e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--table-bg);
+      min-height: 100vh;
+      padding: 20px;
+      color: var(--text-main);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffffff;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #c7d2fe;
+      margin-bottom: 25px;
+      font-size: 1.05rem;
+    }
+
+    /* ESTRUCTURA PRINCIPAL */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* MESA DE VERBOS (IZQUIERDA) - TARJETAS MÁS GRANDES */
+    .desk-area {
+      background-color: #312e81;
+      border: 4px solid #4338ca;
+      border-radius: 20px;
+      padding: 25px;
+      min-height: 550px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    .card-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 80%;
+      max-width: 280px;
+    }
+
+    .card-container {
+      width: 100%;
+      height: 120px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: 16px;
+    }
+
+    .card-container.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-container.active .card-front,
+    .card-container.active .card-back {
+      border: 3px solid #ef4444;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      user-select: none;
+    }
+
+    .card-front {
+      background-color: #fef2f2;
+      color: #b91c1c;
+      font-weight: 800;
+      font-size: 1.6rem;
+      border: 3px solid #ef4444;
+    }
+
+    .card-front::after {
+      content: "★ Irregularidad Propia";
+      font-size: 0.75rem;
+      color: #dc2626;
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    .card-back {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+      transform: rotateY(180deg);
+      border: 2px solid #cbd5e1;
+    }
+
+    .card-back-icon {
+      font-size: 2rem;
+      margin-bottom: 2px;
+    }
+
+    .card-back-text {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+    }
+
+    .select-btn {
+      background-color: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    .select-btn:hover {
+      background-color: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    /* ÁREA DE TRABAJO (DERECHA) */
+    .workspace {
+      background-color: var(--card-bg);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .verb-header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .selected-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .stem-info {
+      font-size: 1rem;
+      color: #dc2626;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .note-badge {
+      display: block;
+      margin-top: 8px;
+      background-color: #fef3c7;
+      color: #92400e;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid #fde68a;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    /* GRID DE FILAS DE CONJUGACIÓN */
+    .conjugation-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 140px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      background-color: #f8fafc;
+      padding: 8px 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .pronoun {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--pronoun-color);
+    }
+
+    /* PUZZLE SVG */
+    .puzzle-box {
+      cursor: pointer;
+    }
+
+    .puzzle-svg {
+      display: block;
+      overflow: visible;
+      filter: drop-shadow(0px 3px 4px rgba(0, 0, 0, 0.12));
+    }
+
+    .text-ending {
+      fill: #ffffff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      dominant-baseline: central;
+      text-anchor: middle;
+      transition: opacity 0.25s ease;
+    }
+
+    .text-hidden {
+      opacity: 0;
+    }
+
+    /* BOTÓN DE AUDIO */
+    .audio-btn {
+      background: #f3f4f6;
+      border: 2px solid #e5e7eb;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    .audio-btn:hover {
+      background-color: var(--yellow-piece);
+      border-color: var(--yellow-border);
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 900px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .desk-area { min-height: auto; }
+      .card-wrapper { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>GRUPO 6: Verbos con Irregularidad Propia</h1>
+  <div class="subtitle">Verbos totalmente irregulares en presente de indicativo</div>
+
+  <div class="main-layout">
+    
+    <!-- MESA DE VERBOS (IZQUIERDA) -->
+    <div class="desk-area" id="deskArea"></div>
+
+    <!-- CONJUGACIÓN (DERECHA) -->
+    <div class="workspace">
+      <div class="verb-header">
+        <div class="selected-title" id="selectedVerbTitle">IR</div>
+        <div class="stem-info" id="selectedVerbInfo">To go</div>
+        <div class="note-badge" id="selectedVerbBadge"></div>
+      </div>
+
+      <div class="conjugation-grid" id="conjugationGrid"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const verbosGrupo6 = [
+      {
+        verbo: "IR",
+        ingles: "To go",
+        icono: "🚶‍♂️",
+        explicacion: "⚠️ Cambia completamente su forma en todas las personas (voy, vas, va...)",
+        conjugaciones: [
+          { pronombre: "yo", forma: "voy" },
+          { pronombre: "tú", forma: "vas" },
+          { pronombre: "él / ella / Ud.", forma: "va" },
+          { pronombre: "nosotros/as", forma: "vamos" },
+          { pronombre: "vosotros/as", forma: "váis" },
+          { pronombre: "ellos / ellas / Uds.", forma: "van" }
+        ]
+      },
+      {
+        verbo: "HABER",
+        ingles: "To have (auxiliary) / There is-are",
+        icono: "📖",
+        explicacion: "📌 <b>El verbo Haber tiene 2 usos principales:</b><br>1. <b>Verbo auxiliar:</b> Para tiempos compuestos (<i>yo he comido, tú has ido...</i>).<br>2. <b>Forma impersonal (HAY):</b> Para expresar existencia en presente (<i>Hay un libro / Hay tres gatos</i>).",
+        conjugaciones: [
+          { pronombre: "yo", forma: "he" },
+          { pronombre: "tú", forma: "has" },
+          { pronombre: "él / ella / Ud.", forma: "ha" },
+          { pronombre: "nosotros/as", forma: "hemos" },
+          { pronombre: "vosotros/as", forma: "habéis" },
+          { pronombre: "ellos / ellas / Uds.", forma: "han" }
+        ]
+      },
+      {
+        verbo: "SER",
+        ingles: "To be (permanent)",
+        icono: "👤",
+        explicacion: "⚠️ Cambia completamente su forma en todas las personas (soy, eres, es...)",
+        conjugaciones: [
+          { pronombre: "yo", forma: "soy" },
+          { pronombre: "tú", forma: "eres" },
+          { pronombre: "él / ella / Ud.", forma: "es" },
+          { pronombre: "nosotros/as", forma: "somos" },
+          { pronombre: "vosotros/as", forma: "sois" },
+          { pronombre: "ellos / ellas / Uds.", forma: "son" }
+        ]
+      }
+    ];
+
+    let selectedVerb = verbosGrupo6[0];
+
+    function renderDesk() {
+      const desk = document.getElementById('deskArea');
+      desk.innerHTML = '';
+
+      verbosGrupo6.forEach((v) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'card-wrapper';
+
+        const container = document.createElement('div');
+        container.className = 'card-container' + (v.verbo === selectedVerb.verbo ? ' active' : '');
+
+        container.innerHTML = `
+          <div class="card-inner">
+            <div class="card-front">
+              <span>${v.verbo}</span>
+            </div>
+            <div class="card-back">
+              <span class="card-back-icon">${v.icono}</span>
+              <span class="card-back-text">${v.ingles}</span>
+            </div>
+          </div>
+        `;
+
+        container.onclick = () => {
+          container.classList.toggle('flipped');
+        };
+
+        const selectBtn = document.createElement('button');
+        selectBtn.className = 'select-btn';
+        selectBtn.textContent = 'Ver Conjugación';
+        selectBtn.onclick = (e) => {
+          e.stopPropagation();
+          selectedVerb = v;
+          renderDesk();
+          updateWorkspace();
+        };
+
+        wrapper.appendChild(container);
+        wrapper.appendChild(selectBtn);
+        desk.appendChild(wrapper);
+      });
+    }
+
+    function updateWorkspace() {
+      document.getElementById('selectedVerbTitle').textContent = selectedVerb.verbo;
+      document.getElementById('selectedVerbInfo').textContent = selectedVerb.ingles;
+      
+      const badge = document.getElementById('selectedVerbBadge');
+      badge.innerHTML = selectedVerb.explicacion;
+
+      const grid = document.getElementById('conjugationGrid');
+      grid.innerHTML = '';
+
+      selectedVerb.conjugaciones.forEach((item, i) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        row.innerHTML = `
+          <div class="pronoun">${item.pronombre}</div>
+          <div class="puzzle-box" onclick="togglePiece(${i})">
+            <svg class="puzzle-svg" width="240" height="48" viewBox="0 0 240 48">
+              <!-- Pieza Bloque Completo Irregular -->
+              <path d="M 5,4 L 230,4 
+                       A 4,4 0 0,1 234,8 
+                       L 234,40 
+                       A 4,4 0 0,1 230,44 
+                       L 5,44 
+                       A 4,4 0 0,1 1,40 
+                       L 1,8 
+                       A 4,4 0 0,1 5,4 Z" 
+                    fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
+              <text x="117" y="24" class="text-ending text-hidden" id="ending-${i}">${item.forma}</text>
+            </svg>
+          </div>
+          <button class="audio-btn" title="Escuchar pronunciación" onclick="speak('${item.pronombre} ${item.forma}')">🔊</button>
+        `;
+        grid.appendChild(row);
+      });
+    }
+
+    function togglePiece(index) {
+      const endingText = document.getElementById(`ending-${index}`);
+      if (endingText) endingText.classList.toggle('text-hidden');
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    renderDesk();
+    updateWorkspace();
+  </script>
+
+</body>
+</html>
